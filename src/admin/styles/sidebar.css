@@ -37,10 +37,12 @@
 
 .sidebar-cedar__logout-btn{
   background:transparent;
+  font-size: 15px !important;
   border:none;
   cursor:pointer;
   width:100%;
   text-align:left;
+  font-family:'Poppins',sans-serif !important;
 }
 
 .sidebar-cedar__icon{

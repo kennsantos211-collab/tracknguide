@@ -58,9 +58,7 @@ export default function QRCode() {
           <p style={{ marginTop: '10px', fontWeight: 'bold', color: '#1976d2' }}>
             Valid for: {currentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
-          <p style={{ fontSize: '0.9em', color: '#666', marginTop: '5px' }}>
-            ⚠️ QR codes expire at midnight and must be regenerated daily
-          </p>
+         
         </div>
 
         <div className="qrcode__grid">
@@ -74,12 +72,6 @@ export default function QRCode() {
                 includeMargin={true}
               />
             </div>
-            <button 
-              className="qrcode__download-btn"
-              onClick={() => downloadQR(timeInRef, `TimeIn-QRCode-${getTodayString()}.png`)}
-            >
-              Download QR Code
-            </button>
           </div>
 
           <div className="qrcode__card">
@@ -92,12 +84,6 @@ export default function QRCode() {
                 includeMargin={true}
               />
             </div>
-            <button 
-              className="qrcode__download-btn"
-              onClick={() => downloadQR(timeOutRef, `TimeOut-QRCode-${getTodayString()}.png`)}
-            >
-              Download QR Code
-            </button>
           </div>
         </div>
       </div>

@@ -8,10 +8,8 @@
 }
 
 .qrcode__container {
-  background: white;
+  background: #f8f9fa;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  padding: 3rem;
   max-width: 900px;
   width: 100%;
 }
@@ -39,9 +37,8 @@
 
 .qrcode__card {
   background: #f8f9fa;
-  border: 2px solid #667eea;
+  border: 2px solid #112892;
   border-radius: 8px;
-  padding: 2rem;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -57,7 +54,6 @@
 
 .qrcode__code-container {
   margin: 1rem 0;
-  padding: 1rem;
   background: white;
   border-radius: 8px;
 }

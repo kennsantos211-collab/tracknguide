@@ -66,16 +66,7 @@ export default function History({ visits = [] }) {
   };
 
   // derive available years from history/visits (fallback to a small range)
-  const yearsSet = new Set();
-  history.forEach(h => {
-    const iso = extractISODate(h);
-    if (iso) yearsSet.add(Number(iso.split('-')[0]));
-  });
-  if (yearsSet.size === 0) {
-    // Add years from 2025 to 2030
-    for (let y = 2025; y <= 2030; y++) yearsSet.add(y);
-  }
-  const years = Array.from(yearsSet).sort((a, b) => b - a);
+  const years = [2025, 2026, 2027, 2028, 2029, 2030];
   // apply role filter to history for counting and display
   const filteredHistory = history.filter(h => {
     if (!selectedRole || selectedRole === 'All') return true;
@@ -164,7 +155,8 @@ export default function History({ visits = [] }) {
         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => (
           <div key={day} className="history-echo__calendar-cell">
             <button
-              className={`history-echo__date-btn ${selectedDay === `${year}-${pad(monthNumber)}-${pad(day)}` ? 'is-open' : ''}`}
+                className={`history-echo__date-btn ${selectedDay === `${year}-${pad(monthNumber)}-${pad(day)}` ? 'is-open' : ''}`}
+                style={{ fontFamily: 'Poppins, Arial, Helvetica, sans-serif' }}
               onClick={() => handleDayClick(day)}
             >
               <span>{day}</span>
