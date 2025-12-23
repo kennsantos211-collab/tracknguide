@@ -7,13 +7,15 @@ import StudentForm from './StudentForm';
 import VisitorForm from './VisitorForm';
 import TimeOutForm from './TimeOutForm';
 import RoomSelection from './RoomSelection';
-import RoomMap from './RoomMap';
 import '../styles/userPage.css';
 
 function UserPage() {
   const [step, setStep] = useState('loading'); // loading, type-selection, form, registered, room-selection, map
   const [userData, setUserData] = useState(null);
-  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [selectedRoom, setSelectedRoom] = useState(() => {
+    const saved = localStorage.getItem('selectedRoom');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [visitRecorded, setVisitRecorded] = useState(false);
 
   useEffect(() => {
@@ -54,6 +56,11 @@ function UserPage() {
         
         // Check if this is a visitor
         if (parsed.type === 'visitor') {
+          // If a room was previously selected, stay on image view
+          const savedRoom = localStorage.getItem('selectedRoom');
+          if (savedRoom) {
+            setSelectedRoom(JSON.parse(savedRoom));
+          }
           setStep('room-selection');
         } else {
           setStep('registered');
@@ -109,6 +116,7 @@ function UserPage() {
   };
 
   const handleRegistrationComplete = (data) => {
+      console.log('Registration complete:', data);
     setUserData(data);
     
     if (data.type === 'visitor') {
@@ -121,20 +129,20 @@ function UserPage() {
 
   const handleSelectRoom = async (room) => {
     setSelectedRoom(room);
-    
+    localStorage.setItem('selectedRoom', JSON.stringify(room));
     // Record visitor's destination with room name
     try {
       await recordTimeIn(userData, room.name);
     } catch (error) {
       console.error('Error recording room selection:', error);
     }
-    
-    setStep('map');
+    // Do not change step to 'map', stay on room-selection
   };
 
   const handleBackToRooms = () => {
     setStep('room-selection');
     setSelectedRoom(null);
+    localStorage.removeItem('selectedRoom');
   };
 
   const handleReset = () => {
@@ -241,11 +249,7 @@ function UserPage() {
   }
 
   if (step === 'room-selection') {
-    return <RoomSelection onSelectRoom={handleSelectRoom} />;
-  }
-
-  if (step === 'map' && selectedRoom) {
-    return <RoomMap room={selectedRoom} onBack={handleBackToRooms} onLogout={handleReset} />;
+    return <RoomSelection onSelectRoom={handleSelectRoom} selectedRoom={selectedRoom} onBack={handleBackToRooms} />;
   }
 
   return null;
