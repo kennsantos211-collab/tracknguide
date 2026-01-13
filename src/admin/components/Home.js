@@ -21,9 +21,8 @@ export default function Home({ visits = [] }){
   const [filter, setFilter] = useState(null);
   const todayVisits = visits.filter(isToday);
   const filteredVisits = filter && filter !== 'all' ? todayVisits.filter(v => v.type && v.type.toLowerCase() === filter) : [];
-  const studentsCount = todayVisits.filter(v => v.type && v.type.toLowerCase() === 'student').length;
   const visitorsCount = todayVisits.filter(v => v.type && v.type.toLowerCase() === 'visitor').length;
-  const teachersCount = todayVisits.filter(v => v.type && v.type.toLowerCase() === 'teacher').length;
+  const newcomersCount = todayVisits.filter(v => v.type && v.type.toLowerCase() === 'teacher').length;
   return (
     <section className="home">
       <div className="home__hero">
@@ -36,18 +35,6 @@ export default function Home({ visits = [] }){
         <div className="home__meta">
           <div className="home__date">{dateStr}</div>
           <div className="home__counts">
-            <div className={`home__count${filter === 'student' ? ' home__count--active' : ''}`} onClick={() => setFilter('student')} style={{cursor:'pointer'}}>
-              <div className="home__count-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="home__icon">
-                  <path d="M12 2L1 7l11 5 9-4.09V17h2V7L12 2zM11 13.5L3.5 9 11 5.5 18.5 9 11 13.5z" />
-                </svg>
-              </div>
-              <div className="home__count-body">
-                <div className="home__count-num">{studentsCount}</div>
-                <div className="home__count-label">Students</div>
-              </div>
-            </div>
-
             <div className={`home__count${filter === 'teacher' ? ' home__count--active' : ''}`} onClick={() => setFilter('teacher')} style={{cursor:'pointer'}}>
               <div className="home__count-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="home__icon">
@@ -55,8 +42,8 @@ export default function Home({ visits = [] }){
                 </svg>
               </div>
               <div className="home__count-body">
-                <div className="home__count-num">{teachersCount}</div>
-                <div className="home__count-label">Teachers</div>
+                <div className="home__count-num">{newcomersCount}</div>
+                <div className="home__count-label">Newcomers</div>
               </div>
             </div>
 

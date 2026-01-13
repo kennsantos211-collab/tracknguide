@@ -121,7 +121,13 @@ function UserPage() {
     setUserData(data);
     
     if (data.type === 'visitor') {
-      setStep('room-selection');
+      // If visitor selected an office, show the office image
+      if (data.office) {
+        setStep('office-image');
+        recordTimeIn(data, data.office);
+      } else {
+        setStep('room-selection');
+      }
     } else {
       setStep('registered');
       recordTimeIn(data);
@@ -257,6 +263,57 @@ function UserPage() {
 
   if (step === 'room-selection') {
     return <RoomSelection onSelectRoom={handleSelectRoom} selectedRoom={selectedRoom} onBack={handleBackToRooms} />;
+  }
+
+  if (step === 'office-image') {
+    const getOfficeImagePath = (officeName) => {
+      const imageMap = {
+        "Finance Office": "Finance Office.png",
+        "Guidance Office": "Guidance Office.png",
+        "Registrar Office": "Registrar's Office.png",
+        "Chancellor's Office": "Chancellor's Office.png"
+      };
+      return `/images/${imageMap[officeName] || ''}`;
+    };
+
+    return (
+      <div className="user-page-success">
+        <div className="success-box">
+          <div className="success-icon">✓</div>
+          <h2 className="success-title">Welcome, {userData.name}!</h2>
+          <p className="success-message">Your visit has been recorded.</p>
+          
+          <div className="user-info">
+            <div className="info-row">
+              <span className="info-label">Purpose:</span>
+              <span className="info-value">{userData.purpose}</span>
+            </div>
+            <div className="info-row">
+              <span className="info-label">Office:</span>
+              <span className="info-value">{userData.office}</span>
+            </div>
+          </div>
+
+          {userData.office && (
+            <div className="office-image-container" style={{ marginTop: '20px', textAlign: 'center' }}>
+              <img 
+                src={getOfficeImagePath(userData.office)} 
+                alt={`${userData.office} location`}
+                style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  console.error('Failed to load office image');
+                }}
+              />
+            </div>
+          )}
+
+          <button className="reset-btn" onClick={handleReset}>
+            Done
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return null;

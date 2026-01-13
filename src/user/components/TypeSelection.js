@@ -10,27 +10,15 @@ function TypeSelection({ onSelectType }) {
         
         <div className="type-buttons">
           <button 
-            className="type-btn teacher-btn"
-            onClick={() => onSelectType('teacher')}
+            className="type-btn student-btn"
+            onClick={() => onSelectType('student')}
           >
             <span className="type-icon">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" />
               </svg>
             </span>
-            <span className="type-label">Teacher</span>
-          </button>
-          
-          <button 
-            className="type-btn student-btn"
-            onClick={() => onSelectType('student')}
-          >
-            <span className="type-icon">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L1 7l11 5 9-4.09V17h2V7L12 2zM11 13.5L3.5 9 11 5.5 18.5 9 11 13.5z" />
-              </svg>
-            </span>
-            <span className="type-label">Student</span>
+            <span className="type-label">Newcomers</span>
           </button>
           
           <button 

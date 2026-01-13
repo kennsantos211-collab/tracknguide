@@ -74,23 +74,43 @@ export default function History({ visits = [] }) {
     return t === selectedRole.toString().toLowerCase();
   });
 
-  // build map of counts per day for the displayed month (from filtered history)
+  // Calculate second month
+  const nextMonthIndex = (monthIndex + 1) % 12;
+  const nextYear = monthIndex === 11 ? year + 1 : year;
+  const nextMonthNumber = nextMonthIndex + 1;
+  const daysInNextMonth = new Date(nextYear, nextMonthNumber, 0).getDate();
+  const nextMonthName = new Date(nextYear, nextMonthIndex, 1).toLocaleString(undefined, { month: 'long' }).toUpperCase();
+
+  // build map of counts per day for both months (from filtered history)
   const countsByDay = {};
+  const countsByDayNextMonth = {};
   const calendarData = {};
   filteredHistory.forEach(entry => {
     const iso = extractISODate(entry);
     if (!iso) return;
     const [y, m, d] = iso.split('-');
+    
+    // First month
     if (Number(y) === year && Number(m) === monthNumber) {
       const day = Number(d);
       countsByDay[day] = (countsByDay[day] || 0) + 1;
       if (!calendarData[iso]) calendarData[iso] = [];
       calendarData[iso].push(entry);
     }
+    
+    // Second month
+    if (Number(y) === nextYear && Number(m) === nextMonthNumber) {
+      const day = Number(d);
+      countsByDayNextMonth[day] = (countsByDayNextMonth[day] || 0) + 1;
+      if (!calendarData[iso]) calendarData[iso] = [];
+      calendarData[iso].push(entry);
+    }
   });
 
-  const handleDayClick = (day) => {
-    const iso = `${year}-${pad(monthNumber)}-${pad(day)}`;
+  const handleDayClick = (day, isNextMonth = false) => {
+    const targetYear = isNextMonth ? nextYear : year;
+    const targetMonth = isNextMonth ? nextMonthNumber : monthNumber;
+    const iso = `${targetYear}-${pad(targetMonth)}-${pad(day)}`;
     setSelectedDay(prev => (prev === iso ? null : iso));
   };
 
@@ -133,77 +153,118 @@ export default function History({ visits = [] }) {
         <label className="history-echo__label">Role:
           <select className="history-echo__select" value={selectedRole} onChange={handleRoleChange}>
             <option value="All">All</option>
-            <option value="Student">Students</option>
             <option value="Visitor">Visitors</option>
-            <option value="Teacher">Teachers</option>
+            <option value="Teacher">Newcomers</option>
           </select>
         </label>
       </div>
-      <h2 className="history-echo__title">{monthName} {year}</h2>
-      {/* Calendar header row: Sunday to Saturday */}
-      <div className="history-echo__calendar-header">
-        {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(dayName => (
-          <div key={dayName} className="history-echo__calendar-header-cell">{dayName}</div>
-        ))}
-      </div>
-      <div className="history-echo__calendar-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
-        {/* Empty cells for days before the first of the month */}
-        {Array.from({ length: new Date(year, monthIndex, 1).getDay() }, (_, i) => (
-          <div key={`empty-${i}`} className="history-echo__calendar-cell empty"></div>
-        ))}
-        {/* Calendar dates aligned to days */}
-        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => (
-          <div key={day} className="history-echo__calendar-cell">
-            <button
-                className={`history-echo__date-btn ${selectedDay === `${year}-${pad(monthNumber)}-${pad(day)}` ? 'is-open' : ''}`}
-                style={{ fontFamily: 'Poppins, Arial, Helvetica, sans-serif' }}
-              onClick={() => handleDayClick(day)}
-            >
-              <span>{day}</span>
-              {countsByDay[day] ? (
-                <span className="history-echo__date-count">{countsByDay[day]}</span>
-              ) : null}
-            </button>
+      
+      <div className="history-echo__split">
+        {/* Left side - Calendar */}
+        <div className="history-echo__calendar-section">
+          {/* First Month */}
+          <h2 className="history-echo__title">{monthName} {year}</h2>
+          {/* Calendar header row: Sunday to Saturday */}
+          <div className="history-echo__calendar-header">
+            {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(dayName => (
+              <div key={dayName} className="history-echo__calendar-header-cell">{dayName}</div>
+            ))}
           </div>
-        ))}
-      </div>
-      {/* Data for selected day below the calendar */}
-      {selectedDay && (
-        <div className="history-echo__day-entries">
-          {selectedEntries.length === 0 ? (
-            <p className="history-echo__empty">No entries for this day.</p>
-          ) : (
-            <div className="home__logwrap">
-              <table className="home__table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Time In</th>
-                    <th>Time Out</th>
-                    {selectedRole === 'All' && <th>Room</th>}
-                    {(selectedRole === 'All' || selectedRole === 'Teacher') && <th>Department</th>}
-                    {selectedRole === 'Visitor' && <th>Room</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedEntries.map((v, i) => (
-                    <tr key={v.id || i} className="home__row">
-                      <td>{v.name || v.text || '—'}</td>
-                      <td>{v.type || '—'}</td>
-                      <td>{v.timeInFormatted || v.timeIn || v.time || '—'}</td>
-                      <td>{v.timeOutFormatted || v.timeOut || '—'}</td>
-                      {selectedRole === 'All' && <td>{v.room || '—'}</td>}
-                      {(selectedRole === 'All' || selectedRole === 'Teacher') && <td>{v.department || '—'}</td>}
-                      {selectedRole === 'Visitor' && <td>{v.room || '—'}</td>}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="history-echo__calendar-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
+            {/* Empty cells for days before the first of the month */}
+            {Array.from({ length: new Date(year, monthIndex, 1).getDay() }, (_, i) => (
+              <div key={`empty-${i}`} className="history-echo__calendar-cell empty"></div>
+            ))}
+            {/* Calendar dates aligned to days */}
+            {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => (
+              <div key={day} className="history-echo__calendar-cell">
+                <button
+                    className={`history-echo__date-btn ${selectedDay === `${year}-${pad(monthNumber)}-${pad(day)}` ? 'is-open' : ''}`}
+                    style={{ fontFamily: 'Poppins, Arial, Helvetica, sans-serif' }}
+                  onClick={() => handleDayClick(day, false)}
+                >
+                  <span>{day}</span>
+                  {countsByDay[day] ? (
+                    <span className="history-echo__date-count">{countsByDay[day]}</span>
+                  ) : null}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Second Month */}
+          <h2 className="history-echo__title" style={{ marginTop: '32px' }}>{nextMonthName} {nextYear}</h2>
+          <div className="history-echo__calendar-header">
+            {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(dayName => (
+              <div key={`next-${dayName}`} className="history-echo__calendar-header-cell">{dayName}</div>
+            ))}
+          </div>
+          <div className="history-echo__calendar-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
+            {/* Empty cells for days before the first of the next month */}
+            {Array.from({ length: new Date(nextYear, nextMonthIndex, 1).getDay() }, (_, i) => (
+              <div key={`next-empty-${i}`} className="history-echo__calendar-cell empty"></div>
+            ))}
+            {/* Calendar dates aligned to days */}
+            {Array.from({ length: daysInNextMonth }, (_, i) => i + 1).map(day => (
+              <div key={`next-${day}`} className="history-echo__calendar-cell">
+                <button
+                    className={`history-echo__date-btn ${selectedDay === `${nextYear}-${pad(nextMonthNumber)}-${pad(day)}` ? 'is-open' : ''}`}
+                    style={{ fontFamily: 'Poppins, Arial, Helvetica, sans-serif' }}
+                  onClick={() => handleDayClick(day, true)}
+                >
+                  <span>{day}</span>
+                  {countsByDayNextMonth[day] ? (
+                    <span className="history-echo__date-count">{countsByDayNextMonth[day]}</span>
+                  ) : null}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Right side - Data Table */}
+        <div className="history-echo__data-section">
+          <h2 className="history-echo__title">{selectedDay ? `Entries for ${selectedDay}` : 'Select a day'}</h2>
+          {selectedDay ? (
+            <div className="history-echo__day-entries">
+              {selectedEntries.length === 0 ? (
+                <p className="history-echo__empty">No entries for this day.</p>
+              ) : (
+                <div className="home__logwrap">
+                  <table className="home__table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
+                        {selectedRole === 'All' && <th>Room</th>}
+                        {(selectedRole === 'All' || selectedRole === 'Teacher') && <th>Department</th>}
+                        {selectedRole === 'Visitor' && <th>Room</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedEntries.map((v, i) => (
+                        <tr key={v.id || i} className="home__row">
+                          <td>{v.name || v.text || '—'}</td>
+                          <td>{v.type || '—'}</td>
+                          <td>{v.timeInFormatted || v.timeIn || v.time || '—'}</td>
+                          <td>{v.timeOutFormatted || v.timeOut || '—'}</td>
+                          {selectedRole === 'All' && <td>{v.room || '—'}</td>}
+                          {(selectedRole === 'All' || selectedRole === 'Teacher') && <td>{v.department || '—'}</td>}
+                          {selectedRole === 'Visitor' && <td>{v.room || '—'}</td>}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
+          ) : (
+            <p className="history-echo__empty">Click on a date in the calendar to view entries.</p>
           )}
         </div>
-      )}
+      </div>
     </section>
   );
 }
