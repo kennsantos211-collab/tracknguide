@@ -15,7 +15,7 @@ export default function QRForm({ onAddVisit }) {
   const [formType, setFormType] = useState('timein');
   const [formData, setFormData] = useState({
     name: '',
-    type: 'Student',
+    type: 'Newcomer',
     room: ''
   });
   const [submitted, setSubmitted] = useState(false);
@@ -262,9 +262,8 @@ export default function QRForm({ onAddVisit }) {
                       onChange={handleInputChange}
                       required
                     >
-                      <option value="Student">Student</option>
+                      <option value="Newcomer">Newcomer</option>
                       <option value="Visitor">Visitor</option>
-                      <option value="Teacher">Teacher</option>
                     </select>
                   </div>
 

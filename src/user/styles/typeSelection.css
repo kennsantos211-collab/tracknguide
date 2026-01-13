@@ -82,12 +82,7 @@
   fill: white;
 }
 
-.teacher-btn:hover {
-  border-color: #0255f1;
-  background: #eff6ff;
-}
-
-.student-btn:hover {
+.newcomer-btn:hover {
   border-color: #0255f1;
   background: #eff6ff;
 }

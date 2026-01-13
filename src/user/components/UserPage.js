@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { doc, setDoc, collection, addDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import TypeSelection from './TypeSelection';
-import TeacherForm from './TeacherForm';
-import StudentForm from './StudentForm';
+import NewcomerForm from './NewcomerForm';
 import VisitorForm from './VisitorForm';
 import TimeOutForm from './TimeOutForm';
 import RoomSelection from './RoomSelection';
@@ -22,14 +21,18 @@ function UserPage() {
     // Check for QR code scan (hash-based routing) FIRST before checking localStorage
     const hash = window.location.hash;
     
+    console.log('UserPage hash detected:', hash);
+    
     // If scanning QR code for time out, show time out form directly
     if (hash.includes('qr-timeout')) {
+      console.log('Setting step to qr-timeout');
       setStep('qr-timeout');
       return;
     }
     
     // If scanning QR code for time in, proceed with normal flow
     if (hash.includes('qr-timein')) {
+      console.log('Setting step to type-selection from qr-timein');
       // Clear hash to avoid confusion
       window.history.replaceState(null, '', window.location.pathname);
       setStep('type-selection');
@@ -88,6 +91,7 @@ function UserPage() {
         name: user.name,
         type: user.type,
         course: user.course || null,
+        yearLevel: user.yearLevel || null,
         year: user.year || null,
         department: user.department || null,
         timeIn: now.toISOString(),
@@ -205,11 +209,8 @@ function UserPage() {
   }
 
   if (step === 'form') {
-    if (userData.type === 'teacher') {
-      return <TeacherForm onComplete={handleRegistrationComplete} />;
-    }
-    if (userData.type === 'student') {
-      return <StudentForm onComplete={handleRegistrationComplete} />;
+    if (userData.type === 'newcomer') {
+      return <NewcomerForm onComplete={handleRegistrationComplete} />;
     }
     if (userData.type === 'visitor') {
       return <VisitorForm onComplete={handleRegistrationComplete} />;
@@ -239,6 +240,12 @@ function UserPage() {
               <div className="info-row">
                 <span className="info-label">Course:</span>
                 <span className="info-value">{userData.course}</span>
+              </div>
+            )}
+            {userData.yearLevel && (
+              <div className="info-row">
+                <span className="info-label">Year Level:</span>
+                <span className="info-value">{userData.yearLevel}</span>
               </div>
             )}
             {userData.year && (

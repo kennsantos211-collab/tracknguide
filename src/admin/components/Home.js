@@ -20,9 +20,9 @@ export default function Home({ visits = [] }){
 
   const [filter, setFilter] = useState(null);
   const todayVisits = visits.filter(isToday);
-  const filteredVisits = filter && filter !== 'all' ? todayVisits.filter(v => v.type && v.type.toLowerCase() === filter) : [];
+  const filteredVisits = filter && filter !== 'all' ? todayVisits.filter(v => v.type && v.type.toLowerCase() === filter) : todayVisits;
   const visitorsCount = todayVisits.filter(v => v.type && v.type.toLowerCase() === 'visitor').length;
-  const newcomersCount = todayVisits.filter(v => v.type && v.type.toLowerCase() === 'teacher').length;
+  const newcomersCount = todayVisits.filter(v => v.type && v.type.toLowerCase() === 'newcomer').length;
   return (
     <section className="home">
       <div className="home__hero">
@@ -35,7 +35,7 @@ export default function Home({ visits = [] }){
         <div className="home__meta">
           <div className="home__date">{dateStr}</div>
           <div className="home__counts">
-            <div className={`home__count${filter === 'teacher' ? ' home__count--active' : ''}`} onClick={() => setFilter('teacher')} style={{cursor:'pointer'}}>
+            <div className={`home__count${filter === 'newcomer' ? ' home__count--active' : ''}`} onClick={() => setFilter('newcomer')} style={{cursor:'pointer'}}>
               <div className="home__count-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="home__icon">
                   <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" />
@@ -70,12 +70,19 @@ export default function Home({ visits = [] }){
                 <th>Type</th>
                 <th>Time In</th>
                 <th>Time Out</th>
-                <th>{filter === 'teacher' ? 'Department' : 'Room'}</th>
+                {filter === 'newcomer' ? (
+                  <>
+                    <th>Department</th>
+                    <th>Year Level</th>
+                  </>
+                ) : (
+                  <th>Room</th>
+                )}
               </tr>
             </thead>
             <tbody>
               {filteredVisits.length === 0 ? (
-                <tr><td colSpan="5" style={{textAlign:'center',color:'#888'}}>No data to display</td></tr>
+                <tr><td colSpan={filter === 'newcomer' ? '6' : '5'} style={{textAlign:'center',color:'#888'}}>No data to display</td></tr>
               ) : (
                 filteredVisits.map((v, i) => (
                   <tr key={i} className="home__row">
@@ -83,11 +90,14 @@ export default function Home({ visits = [] }){
                     <td>{v.type}</td>
                     <td>{v.timeInFormatted || v.timeIn || '-'}</td>
                     <td>{v.timeOutFormatted || v.timeOut || '-'}</td>
-                    <td>
-                      {v.type && v.type.toLowerCase() === 'teacher'
-                        ? (v.department || '-')
-                        : (v.room || '-')}
-                    </td>
+                    {filter === 'newcomer' ? (
+                      <>
+                        <td>{v.department || '-'}</td>
+                        <td>{v.yearLevel || '-'}</td>
+                      </>
+                    ) : (
+                      <td>{v.room || '-'}</td>
+                    )}
                   </tr>
                 ))
               )}

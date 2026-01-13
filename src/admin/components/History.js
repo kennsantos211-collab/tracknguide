@@ -153,8 +153,8 @@ export default function History({ visits = [] }) {
         <label className="history-echo__label">Role:
           <select className="history-echo__select" value={selectedRole} onChange={handleRoleChange}>
             <option value="All">All</option>
+            <option value="Newcomer">Newcomers</option>
             <option value="Visitor">Visitors</option>
-            <option value="Teacher">Newcomers</option>
           </select>
         </label>
       </div>
@@ -239,7 +239,6 @@ export default function History({ visits = [] }) {
                         <th>Time In</th>
                         <th>Time Out</th>
                         {selectedRole === 'All' && <th>Room</th>}
-                        {(selectedRole === 'All' || selectedRole === 'Teacher') && <th>Department</th>}
                         {selectedRole === 'Visitor' && <th>Room</th>}
                       </tr>
                     </thead>
@@ -251,7 +250,6 @@ export default function History({ visits = [] }) {
                           <td>{v.timeInFormatted || v.timeIn || v.time || '—'}</td>
                           <td>{v.timeOutFormatted || v.timeOut || '—'}</td>
                           {selectedRole === 'All' && <td>{v.room || '—'}</td>}
-                          {(selectedRole === 'All' || selectedRole === 'Teacher') && <td>{v.department || '—'}</td>}
                           {selectedRole === 'Visitor' && <td>{v.room || '—'}</td>}
                         </tr>
                       ))}
