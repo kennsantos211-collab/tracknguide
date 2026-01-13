@@ -86,6 +86,8 @@ function UserPage() {
 
     try {
       const now = new Date();
+      console.log('User data before creating visitData:', user);
+      console.log('User purpose:', user.purpose);
       const visitData = {
         userId: user.id,
         name: user.name,
@@ -94,6 +96,8 @@ function UserPage() {
         yearLevel: user.yearLevel || null,
         year: user.year || null,
         department: user.department || null,
+        purpose: user.purpose || null,
+        office: user.office || null,
         timeIn: now.toISOString(),
         timeInFormatted: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         date: now.toLocaleDateString(),
@@ -101,6 +105,7 @@ function UserPage() {
       };
 
       console.log('Recording visit:', visitData);
+      console.log('Purpose in visitData:', visitData.purpose);
       
       // Record visit in Firestore
       await addDoc(collection(db, 'visits'), visitData);
@@ -122,6 +127,8 @@ function UserPage() {
 
   const handleRegistrationComplete = (data) => {
       console.log('Registration complete:', data);
+      console.log('Purpose from registration:', data.purpose);
+      console.log('Office from registration:', data.office);
     setUserData(data);
     
     if (data.type === 'visitor') {

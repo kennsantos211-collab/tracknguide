@@ -75,6 +75,11 @@ export default function Home({ visits = [] }){
                     <th>Department</th>
                     <th>Year Level</th>
                   </>
+                ) : filter === 'visitor' ? (
+                  <>
+                    <th>Purpose</th>
+                    <th>Room</th>
+                  </>
                 ) : (
                   <th>Room</th>
                 )}
@@ -82,7 +87,7 @@ export default function Home({ visits = [] }){
             </thead>
             <tbody>
               {filteredVisits.length === 0 ? (
-                <tr><td colSpan={filter === 'newcomer' ? '6' : '5'} style={{textAlign:'center',color:'#888'}}>No data to display</td></tr>
+                <tr><td colSpan={filter === 'newcomer' ? '6' : filter === 'visitor' ? '6' : '5'} style={{textAlign:'center',color:'#888'}}>No data to display</td></tr>
               ) : (
                 filteredVisits.map((v, i) => (
                   <tr key={i} className="home__row">
@@ -94,6 +99,11 @@ export default function Home({ visits = [] }){
                       <>
                         <td>{v.department || '-'}</td>
                         <td>{v.yearLevel || '-'}</td>
+                      </>
+                    ) : filter === 'visitor' ? (
+                      <>
+                        <td>{v.purpose || '-'}</td>
+                        <td>{v.room || '-'}</td>
                       </>
                     ) : (
                       <td>{v.room || '-'}</td>

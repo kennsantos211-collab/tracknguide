@@ -33,6 +33,8 @@ function AdminApp() {
         const data = doc.data();
         console.log('Visit document:', doc.id, {
           name: data.name,
+          type: data.type,
+          purpose: data.purpose,
           timeIn: data.timeIn,
           timeOut: data.timeOut,
           timeOutFormatted: data.timeOutFormatted
