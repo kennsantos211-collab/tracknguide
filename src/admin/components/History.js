@@ -238,8 +238,8 @@ export default function History({ visits = [] }) {
                         <th>Type</th>
                         <th>Time In</th>
                         <th>Time Out</th>
-                        {selectedRole === 'All' && <th>Room</th>}
-                        {selectedRole === 'Visitor' && <th>Room</th>}
+                        {selectedRole === 'Visitor' && <th>Purpose</th>}
+                        <th>Room</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -249,8 +249,8 @@ export default function History({ visits = [] }) {
                           <td>{v.type || '—'}</td>
                           <td>{v.timeInFormatted || v.timeIn || v.time || '—'}</td>
                           <td>{v.timeOutFormatted || v.timeOut || '—'}</td>
-                          {selectedRole === 'All' && <td>{v.room || '—'}</td>}
-                          {selectedRole === 'Visitor' && <td>{v.room || '—'}</td>}
+                          {selectedRole === 'Visitor' && <td>{v.purpose || '—'}</td>}
+                          <td>{v.room || '—'}</td>
                         </tr>
                       ))}
                     </tbody>

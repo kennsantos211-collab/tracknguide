@@ -3,19 +3,31 @@ import '../styles/home.css';
 import logo from '../images/lcc.png';
 
 export default function Home({ visits = [] }){
-  const today = new Date();
-  const dateStr = today.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const dateStr = new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-  // Helper to check if a visit is from today
+  // Helper to check if a visit is from today (comparing date strings to avoid timezone issues)
   function isToday(visit) {
+    // Try multiple date sources
     const raw = visit.timeInRaw || visit.timeIn;
     if (!raw) return false;
-    const visitDate = new Date(raw);
-    return (
-      visitDate.getFullYear() === today.getFullYear() &&
-      visitDate.getMonth() === today.getMonth() &&
-      visitDate.getDate() === today.getDate()
-    );
+    
+    // Get today's date string in local format
+    const todayStr = new Date().toLocaleDateString();
+    
+    // Check if visit has a date field that matches
+    if (visit.date) {
+      const visitDateStr = new Date(visit.date).toLocaleDateString();
+      if (visitDateStr === todayStr) return true;
+    }
+    
+    // Parse the timeIn/timeInRaw and compare
+    try {
+      const visitDate = new Date(raw);
+      const visitDateStr = visitDate.toLocaleDateString();
+      return visitDateStr === todayStr;
+    } catch (e) {
+      return false;
+    }
   }
 
   const [filter, setFilter] = useState(null);

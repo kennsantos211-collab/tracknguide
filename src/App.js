@@ -43,7 +43,9 @@ function AdminApp() {
           id: doc.id,
           ...data,
           timeInRaw: data.timeIn, // ISO string for filtering
+          timeInFormatted: data.timeInFormatted || (data.timeIn ? new Date(data.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'),
           timeIn: data.timeInFormatted || (data.timeIn ? new Date(data.timeIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'),
+          timeOutFormatted: data.timeOut ? (data.timeOutFormatted || new Date(data.timeOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })) : '-',
           timeOut: data.timeOut ? (data.timeOutFormatted || new Date(data.timeOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })) : '-',
           room: data.room || '-'
         };
