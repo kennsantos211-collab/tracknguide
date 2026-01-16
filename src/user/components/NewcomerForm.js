@@ -7,6 +7,7 @@ function NewcomerForm({ onComplete }) {
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
   const [yearLevel, setYearLevel] = useState('');
+  const [office, setOffice] = useState('');
   const [loading, setLoading] = useState(false);
   const [alreadyRegistered, setAlreadyRegistered] = useState(false);
 
@@ -21,6 +22,7 @@ function NewcomerForm({ onComplete }) {
           setName(parsed.name);
           setDepartment(parsed.department || '');
           setYearLevel(parsed.yearLevel || '');
+          setOffice(parsed.office || '');
         }
       } catch (error) {
         console.error('Error loading saved data:', error);
@@ -28,9 +30,14 @@ function NewcomerForm({ onComplete }) {
     }
   }, []);
 
+  // Clear year level when department changes
+  useEffect(() => {
+    setYearLevel('');
+  }, [department]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim() || !department.trim() || !yearLevel.trim()) {
+    if (!name.trim() || !department.trim() || !yearLevel.trim() || !office.trim()) {
       alert('Please fill in all required fields');
       return;
     }
@@ -43,6 +50,7 @@ function NewcomerForm({ onComplete }) {
         name: name.trim(),
         department: department.trim(),
         yearLevel: yearLevel.trim(),
+        office: office.trim(),
         type: 'newcomer',
         registeredAt: new Date().toISOString()
       };
@@ -116,24 +124,48 @@ function NewcomerForm({ onComplete }) {
               className="form-input"
               value={yearLevel}
               onChange={(e) => setYearLevel(e.target.value)}
-              disabled={loading}
+              disabled={loading || !department}
               required
             >
               <option value="">Select year level</option>
-              <optgroup label="High School">
-                <option value="Grade 7">Grade 7</option>
-                <option value="Grade 8">Grade 8</option>
-                <option value="Grade 9">Grade 9</option>
-                <option value="Grade 10">Grade 10</option>
-                <option value="Grade 11">Grade 11</option>
-                <option value="Grade 12">Grade 12</option>
-              </optgroup>
-              <optgroup label="College">
-                <option value="1st Year">1st Year</option>
-                <option value="2nd Year">2nd Year</option>
-                <option value="3rd Year">3rd Year</option>
-                <option value="4th Year">4th Year</option>
-              </optgroup>
+              {department === 'High School' && (
+                <>
+                  <option value="Grade 7">Grade 7</option>
+                  <option value="Grade 8">Grade 8</option>
+                  <option value="Grade 9">Grade 9</option>
+                  <option value="Grade 10">Grade 10</option>
+                  <option value="Grade 11">Grade 11</option>
+                  <option value="Grade 12">Grade 12</option>
+                </>
+              )}
+              {department === 'College' && (
+                <>
+                  <option value="1st Year">1st Year</option>
+                  <option value="2nd Year">2nd Year</option>
+                  <option value="3rd Year">3rd Year</option>
+                  <option value="4th Year">4th Year</option>
+                </>
+              )}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="office" className="form-label">Office</label>
+            <select
+              id="office"
+              className="form-input"
+              value={office}
+              onChange={(e) => setOffice(e.target.value)}
+              disabled={loading}
+              required
+            >
+              <option value="">Select office</option>
+              <option value="Chancellor's Office">Chancellor's Office</option>
+              <option value="Finance Office">Finance Office</option>
+              <option value="Guidance Office">Guidance Office</option>
+              <option value="Registrar Office">Registrar Office</option>
+              <option value="BED Library">BED Library</option>
+              <option value="College Library">College Library</option>
             </select>
           </div>
           

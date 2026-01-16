@@ -131,14 +131,12 @@ function UserPage() {
       console.log('Office from registration:', data.office);
     setUserData(data);
     
-    if (data.type === 'visitor') {
-      // If visitor selected an office, show the office image
-      if (data.office) {
-        setStep('office-image');
-        recordTimeIn(data, data.office);
-      } else {
-        setStep('room-selection');
-      }
+    // Show office image for both visitors and newcomers if office is selected
+    if (data.office) {
+      setStep('office-image');
+      recordTimeIn(data, data.office);
+    } else if (data.type === 'visitor') {
+      setStep('room-selection');
     } else {
       setStep('registered');
       recordTimeIn(data);
@@ -285,7 +283,9 @@ function UserPage() {
         "Finance Office": "Finance Office.png",
         "Guidance Office": "Guidance Office.png",
         "Registrar Office": "Registrar's Office.png",
-        "Chancellor's Office": "Chancellor's Office.png"
+        "Chancellor's Office": "Chancellor's Office.png",
+        "BED Library": "3rd/BED Library.png",
+        "College Library": "3rd/College Library.png"
       };
       return `/images/${imageMap[officeName] || ''}`;
     };

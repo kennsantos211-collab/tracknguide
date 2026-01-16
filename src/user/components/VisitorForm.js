@@ -88,6 +88,8 @@ function VisitorForm({ onComplete }) {
               <option value="Finance Office">Finance Office</option>
               <option value="Guidance Office">Guidance Office</option>
               <option value="Registrar Office">Registrar Office</option>
+              <option value="BED Library">BED Library</option>
+              <option value="College Library">College Library</option>
             </select>
           </div>
           
