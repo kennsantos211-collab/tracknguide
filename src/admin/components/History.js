@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/history.css';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function History({ visits = [] }) {
   const [history, setHistory] = useState([]);
@@ -131,6 +133,64 @@ export default function History({ visits = [] }) {
     setSelectedDay(null);
   };
 
+  const handleDownloadDailyReport = () => {
+    if (!selectedDay) {
+      alert('Please select a day first to download the daily report.');
+      return;
+    }
+
+    const entries = calendarData[selectedDay] || [];
+    if (entries.length === 0) {
+      alert('No entries available for the selected day.');
+      return;
+    }
+
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.text(`Daily Report - ${selectedDay}`, 14, 20);
+    
+    // Add filter info
+    doc.setFontSize(10);
+    doc.text(`Role Filter: ${selectedRole}`, 14, 30);
+    doc.text(`Total Entries: ${entries.length}`, 14, 36);
+    
+    // Prepare table data
+    const tableColumn = selectedRole === 'Visitor' 
+      ? ['Name', 'Type', 'Time In', 'Time Out', 'Purpose', 'Room']
+      : ['Name', 'Type', 'Time In', 'Time Out', 'Room'];
+    
+    const tableRows = entries.map(v => {
+      const row = [
+        v.name || v.text || '—',
+        v.type || '—',
+        v.timeInFormatted || v.timeIn || v.time || '—',
+        v.timeOutFormatted || v.timeOut || '—'
+      ];
+      
+      if (selectedRole === 'Visitor') {
+        row.push(v.purpose || '—');
+      }
+      
+      row.push(v.room || '—');
+      return row;
+    });
+
+    // Add table
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 42,
+      theme: 'striped',
+      headStyles: { fillColor: [41, 128, 185] },
+      styles: { fontSize: 9 }
+    });
+    
+    // Save the PDF
+    doc.save(`daily-report-${selectedDay}.pdf`);
+  };
+
   const selectedEntries = selectedDay ? calendarData[selectedDay] || [] : [];
 
   return (
@@ -224,7 +284,27 @@ export default function History({ visits = [] }) {
         
         {/* Right side - Data Table */}
         <div className="history-echo__data-section">
-          <h2 className="history-echo__title">{selectedDay ? `Entries for ${selectedDay}` : 'Select a day'}</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h2 className="history-echo__title" style={{ margin: 0 }}>{selectedDay ? `Entries for ${selectedDay}` : 'Select a day'}</h2>
+            {selectedDay && selectedEntries.length > 0 && (
+              <button 
+                className="history-echo__download-btn" 
+                onClick={handleDownloadDailyReport}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#2980b9',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontFamily: 'Poppins, Arial, Helvetica, sans-serif',
+                  fontSize: '14px'
+                }}
+              >
+                Download Daily Report
+              </button>
+            )}
+          </div>
           {selectedDay ? (
             <div className="history-echo__day-entries">
               {selectedEntries.length === 0 ? (
